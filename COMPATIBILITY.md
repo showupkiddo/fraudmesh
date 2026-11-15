@@ -1,15 +1,14 @@
 # Compatibility and environment lock
 
-This project adopts a single pinned environment for all research work. Do not upgrade the stack mid-project without updating this file and the lockfile/CI image.
+This project adopts pinned dependencies and records what has actually been exercised. Do not upgrade the stack mid-project without updating this file and the lockfile/CI image.
 
-- Python: 3.13.1
-- PyTorch: 2.5.1
-- CUDA: 12.4 (build matched to the PyTorch wheel used in the lab image)
-- PyG: 2.6.1
-- Opacus: 1.4.1
-- Flower: 1.18.0
+- Python: 3.13.1 local development; CI currently uses 3.12
 - Hydra: 1.3.2
 - MLflow: 2.18.0
 - pytest: 8.3.4
+- pandas: 2.2.3
+- Pandera: 0.22.1
+- PyArrow: 18.1.0
+- DVC: 3.67.1
 
-This repository is intentionally set up to run on CPU for the fixture dataset and to support GPU-capable runs only when a real GPU environment is explicitly available.
+The data-validation and fixture-Parquet pipeline has been exercised on CPU with the pinned data stack above. The PyTorch, CUDA, PyG, Opacus, and Flower combination is not yet installed or verified; it must be tested and recorded before model development begins. GPU runs require an explicitly available GPU environment.

@@ -8,9 +8,29 @@
 
 ## Phase 1 status
 
-- Status: in progress / data schema and fixture foundation complete
-- Current milestone: canonical transaction schema, validation layer, dataset catalog, and a small fixture dataset are now in place.
-- Main focus: continue dataset-access work, document the canonical schema, and retain a reproducible fixture for CI while external data remains pending.
+- Status: blocked at the Phase 1 gate; the INR canonical contract and reviewed 2022–2023 conversion table are implemented, but required real-source canonical datasets and verification are incomplete.
+- Current milestone: canonical `amount_inr` schema, Pandera validation, keyed pseudonymisation, source adapters, data cards, rate provenance, fixture and graph-source DVC stages, and streaming tabular converters for PaySim/BAF/ULB/IEEE-CIS are in place.
+- Kaggle CLI issue: Kaggle 2.2.5 was installed for Python 3.13, but its per-user `Scripts` directory was absent from `PATH`. Invoking `kaggle.exe` by full path reports the version and authenticated dataset file listings work. The PowerShell fix is documented in `docs/DATA_SETUP.md`.
+- Local DVC issue: the editable `fraudmesh` install pointed at an old checkout under the user's Desktop, so `dvc repro` could not import this repository. Reinstalling `.[dev,data]` from this checkout fixed it; the fixture stage rebuilt 15 rows with the same SHA-256 recorded below.
+- Downloads: AMLworld, PaySim, SAML-D, BAF, ULB, and IEEE-CIS source files are present locally and were scanned. AMLworld and PaySim pre-existed; exact download dates for the other sources are not recorded. Current Kaggle metadata reports the licences recorded in `data/cards/catalog.json`.
+- Observed raw-source scans: AMLworld HI-Small has 5,078,345 rows and 11 columns (5,177 laundering-labelled rows); LI-Small has 6,924,049 rows and 11 columns (3,565 laundering-labelled rows). PaySim has 6,362,620 rows and 11 columns (8,213 fraud-labelled rows). These are file scans, not model results.
+- Additional full raw scans: SAML-D has 9,504,852 rows and 12 columns (9,873 laundering-labelled rows, no blank cells); each of six BAF variants has 1,000,000 rows (32 or 34 columns; month indices 0–7); ULB has 284,807 rows and 31 columns (492 positives, no blank cells). Published summary checks are recorded below; BAF's extra columns in Variants III/V still need explanation against the datasheet.
+- IEEE-CIS scan: 590,540 training transactions (20,663 positives), 506,691 unlabeled test transactions, 144,233 train identity rows, and 141,907 test identity rows. Transaction IDs are unique in all four files; every identity row joins to a transaction, and no transaction rows are duplicated.
+- Published-summary checks: AMLworld HI/LI row counts and positive-label rates align with the dataset page's rounded 5M/7M and 1-in-981/1-in-1,942 figures; SAML-D's 9,873 positives equal the published 0.1039% after rounding; ULB's 492/284,807 equals the published 0.172% after rounding; and all six BAF files match the published 1,000,000 rows each. BAF Variants III/V include undocumented `x1`/`x2` columns beyond the stated 30 features, month, and target; the tabular pipeline excludes those columns pending source clarification.
+- AMLworld pattern validation: every official pattern transaction matched exactly one row in the corresponding Small transaction file (HI-Small 3,209/3,209; LI-Small 1,023/1,023), with no duplicate matches or unmatched patterns. Positive-edge counts remain distinct from pattern-transaction counts.
+- AMLworld HI-Small full DVC output verified: 5,078,345 rows, 5,177 positive edges, 3,209 ring-labelled rows, no nulls in required monetary/label/time fields, UTC timestamps, and `amount_inr: double`. The full Parquet hash is `392eb0bc6a0996f3637e7a0f8749cd8e839dc22011f082771e72a0cbe1e0b632`.
+- BAF sample validation: the first 1,000 rows of Base and Variants I–V passed the current tabular adapter and schema checks. Their `month` values are relative indices; the sample check used an epoch solely to preserve ordering, not to assert real calendar dates.
+- Tabular conversion sample validation: end-to-end temporary Parquet builds for the first 1,000 rows of each BAF variant, PaySim, and ULB passed schema, leakage, timestamp, and entity-pseudonym checks. BAF outputs have 30 features each; undocumented `x1`/`x2` are excluded from Variants III/V. Sample positive counts were Base 8, I 14, II 14, III 9, IV 7, V 13; PaySim 9; ULB 2.
+- IEEE-CIS sample validation: the first 1,000 labeled training rows joined against the identity table, passed schema/leakage checks, and emitted fixed-shape pseudonymized card/device keys. Missing entity values use row-specific keyed placeholders, so they cannot create false cross-row links.
+- INR policy: canonical monetary output is `amount_inr`. Fiat rates for 2022 and 2023 use cited annual ECB reference rates or World Bank WDI official annual averages, with cross-rate calculations documented in `docs/DATA_SETUP.md`. The 2022 BTC rate uses 18 Coinbase daily closes spanning the observed AMLworld period (September 1–18), cross-converted using the 2022 World Bank INR/USD average. These are annual/period averages, not transaction-date spot prices.
+- Currency coverage: full AMLworld HI/LI source scans found 15 currency labels, all mapped to ISO codes and covered by the INR table for their 2022 source year. SAML-D's 9,504,852-row scan found 13 payment currencies and dates from 2022-10-07 through 2023-08-23; annual rates cover both years.
+- SAML-D `Dirham` mapping: user confirmed AED; the year-specific INR conversion remains documented as an annual-rate approximation.
+- AMLworld time coverage: HI-Small spans 2022-09-01 00:00 through 2022-09-18 16:18 UTC; LI-Small spans 2022-09-01 00:00 through 2022-09-17 15:28 UTC. The rate table loaded and covered every currency/year observed in the full transaction scans.
+- Synthetic/unspecified units: PaySim simulation-unit amounts, ULB's unspecified `Amount`, and IEEE-CIS `TransactionAmt` are not presented as INR monetary outputs. PaySim is tabular-only; ULB remains a standalone tabular benchmark.
+- SHA-256 of uncompressed source CSV members: HI-Small `b19d39f515523373f991b689c07e11e7b0b95c17a2c27a87d91584ae16c5b040`; LI-Small `f7a9940339c78b5d1476071505b5867c0f5319640b9c4279d13f531bf965319d`; PaySim `16910f90577b0d981bf8ff289714510bb89bc71bff7d3f220f024e287e4eea6b`.
+- IEEE-CIS raw CSV SHA-256: train transaction `3a5c83ab6b3cc13dcabe5ffa9f522307fd5f7f7b6e6f6a60c32284ca6283d642`; train identity `b63c725d8377be90a995268d97f347c17d456b95db45807adcf9f59cd603c37c`; test transaction `2a8e51f1d335a86025d2b7f45beb9b78d0ab1edd726ef531d8b71a8a0065c011`; test identity `3e5978cb13ca5e72f52babc4349ae0125e14b87ca8bfabe952ab67bb4ff1e10b`.
+- Source archive SHA-256: SAML-D `87476ada943fc698ab30bc9ee132c68324ae762e4f9addb61d5347af3a738a00`; BAF `fb8d6d8b96f9a3c670a9ad0014da25ee8bee3fcb2be67bdcd115784bdb37cf8a`; ULB `a0360ce715992212e9ac72d8ccdca97f4be87dc1fdf2bed011358f7ab409a28a`.
+- Main focus: complete available P1 tabular canonicalization, full-data validation, leakage review, EDA/literature comparison, and DVC rebuild evidence; configure the required team DVC remote.
 
 ## Decisions taken
 
@@ -19,20 +39,33 @@
 - Chose a CPU-first fixture workflow for local development and a GPU-capable path only when real compute is explicitly available.
 - Established a local MLflow tracking pattern using `mlruns/` and a Dockerised MLflow server for the project.
 - Adopted a canonical transaction schema in the `fraudmesh.data` package so downstream adapters and graph builders can share one contract.
+- Added Pandera validation, explicit UTC normalization, reviewed-rate-table requirements, HMAC account pseudonymisation, leakage checks, and partitioned Parquet writers.
+- Added row adapters for AMLworld, PaySim, IEEE-CIS, BAF, ULB, and a column-map-driven SAML-D adapter; the user confirmed SAML-D's `Dirham` currency label maps to AED.
+- Initialized DVC locally and verified the fixture canonicalization stage; the project DVC remote is not configured.
+- The fixture DVC stage emitted 15 canonical rows with SHA-256 `ec52bf3eba4f7830a12a0013d4c653e7cb072b94527d61378100cd6fc356cbcc`; this is fixture evidence only, not a real-dataset result.
 
 ## Blockers
 
-- Real dataset access (Kaggle/IEEE-CIS) is pending human approval and any required competition-rule acceptance.
-- GPU access and DVC remote configuration still need explicit confirmation from the team.
-- Full raw-data download and licence verification for P0/P1 sources are currently external dependencies.
+- IEEE-CIS files have since become available locally despite the earlier Kaggle CLI 403. The labeled train conversion is not yet a full DVC run; the public test split has no labels and must not be assigned fabricated negatives.
+- A random 256-bit HMAC key was created outside the repository at `%LOCALAPPDATA%\FraudMesh\pseudonymization.key` with a current-user-only ACL. Each conversion terminal must load it as `FRAUDMESH_PSEUDONYMIZATION_KEY`; the key itself is never written to Git or DVC.
+- Full real-source canonical outputs and validation are still in progress; full-source EDA and clean-machine rebuild evidence remain incomplete.
+- A DVC remote has not been configured.
+- IEEE-CIS's first 1,000 labeled rows passed a joined conversion sample; its full training conversion is still pending. SAML-D date/time combination and INR conversion have focused unit coverage; its full source pipeline is being run.
+- PaySim, ULB, and all six BAF variants have passed end-to-end 1,000-row Parquet conversion samples; full DVC conversions are not yet run.
+- Kaggle licence metadata is recorded for available sources. AMLworld and PaySim terms still need human review, and their download dates were not recorded.
+- The fixture and AMLworld HI-Small DVC rebuilds are complete. AMLworld LI-Small and SAML-D real-source stages are still running; tabular converters need DVC stages and full runs. No clean-machine canonical rebuild evidence exists.
+- GPU access is not needed to continue Phase 1.
 
 ## Next actions
 
-1. Finalise the Phase 1 gate report and explicitly mark the external-data blockers.
-2. Add the first DVC stage and canonical-data transformation pipeline once the raw downloads are available.
-3. Prepare the graph construction package for AMLworld partitioning and the blind-spot table in Phase 2.
+1. Add and run the full IEEE-CIS labeled-train DVC stage; keep the unlabeled competition test split clearly separate.
+2. Load the same secured local pseudonymization key into any terminal used for conversion; provision it securely for any clean-machine rebuild.
+3. Finish full AMLworld/SAML-D validation and canonical outputs, and add/run stages for available P1 tabular sources.
+4. Complete per-source data-card/licence review and EDA comparisons against published statistics.
+5. Configure a team-controlled DVC remote and demonstrate deterministic clean-machine rebuild hashes.
+6. Do not start Phase 2 until every Phase 1 exit criterion is evidenced.
 
 ## Compute used
 
-- Local CPU environment for scaffold validation, data-schema tests, and toy MLflow execution.
+- Local CPU environment; all 21 tests pass, Ruff and mypy pass. The fixture and AMLworld HI-Small DVC stages rebuilt successfully; other real-source DVC runs are in progress.
 - No GPU workload launched yet.

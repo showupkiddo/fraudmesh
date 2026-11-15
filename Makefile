@@ -1,7 +1,7 @@
 .PHONY: install test lint precommit mlflow-up
 
 install:
-	python -m pip install -e .[dev]
+	python -m pip install -e .[dev,data]
 
 test:
 	pytest -q
