@@ -1,0 +1,16 @@
+defaults:
+  - experiment: toy
+
+project:
+  name: FraudMesh
+  phase: 0
+  tenant: tenant-a
+
+mlflow:
+  experiment_name: fraudmesh-phase0
+  tracking_uri: file:///mlruns
+
+training:
+  seed: 7
+  n_rounds: 3
+  device: cpu
