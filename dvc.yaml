@@ -1,0 +1,54 @@
+stages:
+  phase1-fixture-canonical:
+    cmd: python -m fraudmesh.data.pipeline --output-dir data/processed/fixture
+    deps:
+      - data/fixtures/fraud_fixture.csv
+      - pyproject.toml
+      - src/fraudmesh/data
+    outs:
+      - data/processed/fixture
+  phase1-amlworld-hi-small-canonical:
+    cmd: >-
+      python -m fraudmesh.data.pipeline --source amlworld
+      --dataset amlworld-hi-small
+      --input-path data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/HI-Small_Trans.csv
+      --pattern-path data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/HI-Small_Patterns.txt
+      --rates-path data/config/currency-rates.csv
+      --output-dir data/processed/amlworld-hi-small
+    deps:
+      - data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/HI-Small_Trans.csv
+      - data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/HI-Small_Patterns.txt
+      - data/config/currency-rates.csv
+      - pyproject.toml
+      - src/fraudmesh/data
+    outs:
+      - data/processed/amlworld-hi-small
+  phase1-amlworld-li-small-canonical:
+    cmd: >-
+      python -m fraudmesh.data.pipeline --source amlworld
+      --dataset amlworld-li-small
+      --input-path data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/LI-Small_Trans.csv
+      --pattern-path data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/LI-Small_Patterns.txt
+      --rates-path data/config/currency-rates.csv
+      --output-dir data/processed/amlworld-li-small
+    deps:
+      - data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/LI-Small_Trans.csv
+      - data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/LI-Small_Patterns.txt
+      - data/config/currency-rates.csv
+      - pyproject.toml
+      - src/fraudmesh/data
+    outs:
+      - data/processed/amlworld-li-small
+  phase1-samld-canonical:
+    cmd: >-
+      python -m fraudmesh.data.pipeline --source samld
+      --input-path data/raw/samld/synthetic-transaction-monitoring-dataset-aml.zip
+      --rates-path data/config/currency-rates.csv
+      --output-dir data/processed/samld
+    deps:
+      - data/raw/samld/synthetic-transaction-monitoring-dataset-aml.zip
+      - data/config/currency-rates.csv
+      - pyproject.toml
+      - src/fraudmesh/data
+    outs:
+      - data/processed/samld
