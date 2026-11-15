@@ -52,3 +52,53 @@ stages:
       - src/fraudmesh/data
     outs:
       - data/processed/samld
+  phase1-tabular-paysim-canonical:
+    cmd: >-
+      python -m fraudmesh.tabular_pipeline --source paysim
+      --input-path data/raw/paysim/paysim1.zip
+      --output-dir data/processed/paysim
+    deps:
+      - data/raw/paysim/paysim1.zip
+      - pyproject.toml
+      - src/fraudmesh/data
+      - src/fraudmesh/tabular_pipeline.py
+    outs:
+      - data/processed/paysim
+  phase1-tabular-baf-canonical:
+    cmd: >-
+      python -m fraudmesh.tabular_pipeline --source baf
+      --input-path data/raw/baf/bank-account-fraud-dataset-neurips-2022.zip
+      --output-dir data/processed/baf
+    deps:
+      - data/raw/baf/bank-account-fraud-dataset-neurips-2022.zip
+      - pyproject.toml
+      - src/fraudmesh/data
+      - src/fraudmesh/tabular_pipeline.py
+    outs:
+      - data/processed/baf
+  phase1-tabular-ulb-canonical:
+    cmd: >-
+      python -m fraudmesh.tabular_pipeline --source ulb
+      --input-path data/raw/ulb/creditcardfraud.zip
+      --output-dir data/processed/ulb
+    deps:
+      - data/raw/ulb/creditcardfraud.zip
+      - pyproject.toml
+      - src/fraudmesh/data
+      - src/fraudmesh/tabular_pipeline.py
+    outs:
+      - data/processed/ulb
+  phase1-tabular-ieee-cis-train-canonical:
+    cmd: >-
+      python -m fraudmesh.tabular_pipeline --source ieee-cis
+      --input-path data/raw/ieee-cis/ieee-fraud-detection/train_transaction.csv
+      --identity-path data/raw/ieee-cis/ieee-fraud-detection/train_identity.csv
+      --output-dir data/processed/ieee-cis
+    deps:
+      - data/raw/ieee-cis/ieee-fraud-detection/train_transaction.csv
+      - data/raw/ieee-cis/ieee-fraud-detection/train_identity.csv
+      - pyproject.toml
+      - src/fraudmesh/data
+      - src/fraudmesh/tabular_pipeline.py
+    outs:
+      - data/processed/ieee-cis

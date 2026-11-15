@@ -45,11 +45,11 @@ kaggle competitions download -c ieee-fraud-detection -p data/raw/ieee-cis
 
 The IEEE-CIS file listing can succeed while its download is denied. If `competitions download` returns 403, open the competition rules while signed in to the same Kaggle account used by the CLI and confirm access there. Do not accept terms through automation.
 
-The DVC pipeline contains a checked-in fixture stage and full-data conversion stages for AMLworld HI-Small, AMLworld LI-Small, and SAML-D:
+The DVC pipeline contains a fixture stage and full-data conversion stages for AMLworld HI-Small, AMLworld LI-Small, SAML-D, PaySim, all six BAF variants, ULB, and the labeled IEEE-CIS training split. The unlabeled IEEE-CIS test split is deliberately excluded:
 
 ```powershell
 python -m dvc repro phase1-fixture-canonical
-python -m dvc repro phase1-amlworld-hi-small-canonical phase1-amlworld-li-small-canonical phase1-samld-canonical
+python -m dvc repro
 ```
 
 The real-data stages require the raw files, reviewed rates, and the same securely provisioned pseudonymization key on every rebuild. Each adapter must be tested against a source sample before it is used on the complete dataset. AMLworld conversion uses `Amount Paid` / `Payment Currency`; SAML-D uses `Amount` / `Payment_currency`. Ring membership must be loaded from the official AMLworld pattern files; it must not be inferred by graph propagation.
