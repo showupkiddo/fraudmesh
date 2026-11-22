@@ -12,3 +12,5 @@ mlruns/
 .vscode/
 *.sqlite3
 .DS_Store
+/data/processed/*
+!/data/processed/.gitignore
