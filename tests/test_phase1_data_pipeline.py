@@ -111,6 +111,7 @@ def test_amlworld_pattern_file_assigns_official_ring_and_typology(tmp_path) -> N
 
     assert count == 1
     assert len(labels) == 1
+    assert table["transaction_id"].to_pylist() == ["HI-Small_Trans:2"]
     assert table["ring_id"].to_pylist() == ["amlworld-hi-small:pattern-00001"]
     assert table["typology"].to_pylist() == ["FAN-OUT"]
 

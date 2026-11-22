@@ -492,7 +492,13 @@ def convert_amlworld_csv(
             if unmatched:
                 raise ValueError(f"{unmatched} AMLworld pattern rows were not found in the transaction file")
 
-    return write_partitioned_parquet(normalized_rows(), output_dir, batch_size=batch_size)
+    # AMLworld IDs are generated from source line numbers, so global duplicate tracking is redundant.
+    return write_partitioned_parquet(
+        normalized_rows(),
+        output_dir,
+        batch_size=batch_size,
+        check_unique_ids=False,
+    )
 
 
 def adapt_tabular_row(
