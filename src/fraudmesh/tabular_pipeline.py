@@ -52,6 +52,7 @@ def write_tabular_parquet_stream(
     output_path: str | Path,
     *,
     batch_size: int = 50_000,
+    check_unique_ids: bool = True,
 ) -> dict[str, object]:
     if batch_size <= 0:
         raise ValueError("batch_size must be positive")
@@ -61,7 +62,7 @@ def write_tabular_parquet_stream(
     batch: list[TabularExample] = []
     writer: pq.ParquetWriter | None = None
     expected_schema: tuple[str, tuple[str, ...], tuple[str, ...]] | None = None
-    seen_ids: set[tuple[str, str]] = set()
+    seen_ids: set[tuple[str, str]] | None = set() if check_unique_ids else None
     feature_names: tuple[str, ...] = ()
     entity_names: tuple[str, ...] = ()
     missing_values: dict[str, int] = {}
@@ -98,10 +99,11 @@ def write_tabular_parquet_stream(
                 missing_values.update({name: 0 for name in feature_names})
             elif current_schema != expected_schema:
                 raise ValueError("tabular examples do not share one ordered dataset schema")
-            key = (example.dataset, example.transaction_id)
-            if key in seen_ids:
-                raise ValueError(f"duplicate tabular transaction_id: {example.dataset}/{example.transaction_id}")
-            seen_ids.add(key)
+            if seen_ids is not None:
+                key = (example.dataset, example.transaction_id)
+                if key in seen_ids:
+                    raise ValueError(f"duplicate tabular transaction_id: {example.dataset}/{example.transaction_id}")
+                seen_ids.add(key)
             row_count += 1
             positive_count += example.label
             min_timestamp = min(min_timestamp, example.timestamp) if min_timestamp else example.timestamp
@@ -198,7 +200,13 @@ def convert_paysim(
                     pseudonymizer=pseudonymizer,
                 )
 
-        result = write_tabular_parquet_stream(examples(), output_path, batch_size=batch_size)
+        # IDs are generated from source row numbers, so global duplicate tracking is redundant.
+        result = write_tabular_parquet_stream(
+            examples(),
+            output_path,
+            batch_size=batch_size,
+            check_unique_ids=False,
+        )
         result["timestamp_basis"] = "step-hours relative to the source; anchored at 1970-01-01 UTC"
         result["source_unit_policy"] = "source amount features are not INR-denominated monetary outputs"
         return result
@@ -234,7 +242,13 @@ def convert_ulb(
                     feature_fields=feature_fields,
                 )
 
-        result = write_tabular_parquet_stream(examples(), output_path, batch_size=batch_size)
+        # IDs are generated from source row numbers, so global duplicate tracking is redundant.
+        result = write_tabular_parquet_stream(
+            examples(),
+            output_path,
+            batch_size=batch_size,
+            check_unique_ids=False,
+        )
         result["timestamp_basis"] = "source seconds relative to the first transaction; anchored at 1970-01-01 UTC"
         result["source_unit_policy"] = "source Amount feature is not reported as INR"
         return result
@@ -401,10 +415,12 @@ def convert_baf_archive(
                                 feature_fields=feature_fields,
                             )
 
+                    # IDs include the variant and source row number.
                     result = write_tabular_parquet_stream(
                         examples(),
                         output_root / f"{variant}.parquet",
                         batch_size=batch_size,
+                        check_unique_ids=False,
                     )
                     result["timestamp_basis"] = (
                         "source month index mapped to relative months from 1970-01; not a source calendar date"

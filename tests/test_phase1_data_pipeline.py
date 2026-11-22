@@ -264,6 +264,7 @@ def test_samld_converter_combines_date_and_time_before_rate_lookup(tmp_path) -> 
 
     assert count == 1
     assert table["timestamp"].to_pylist()[0].isoformat() == "2023-08-23T10:35:19+00:00"
+    assert table["transaction_id"].to_pylist() == ["samld:1"]
     assert table["amount_inr"].to_pylist() == [10.0]
     assert table["typology"].to_pylist() == ["structuring"]
 

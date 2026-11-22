@@ -744,7 +744,13 @@ def convert_samld_csv(
                 if row_limit is not None and row_number >= row_limit:
                     break
 
-    return write_partitioned_parquet(normalized_rows(), output_dir, batch_size=batch_size)
+    # SAML-D IDs are generated from the source row number, so global duplicate tracking is redundant.
+    return write_partitioned_parquet(
+        normalized_rows(),
+        output_dir,
+        batch_size=batch_size,
+        check_unique_ids=False,
+    )
 
 
 def validate_tabular_examples(examples: list[TabularExample]) -> list[str]:
@@ -831,6 +837,7 @@ def write_partitioned_parquet(
     output_dir: str | Path,
     *,
     batch_size: int = 50_000,
+    check_unique_ids: bool = True,
 ) -> tuple[int, str]:
     if batch_size <= 0:
         raise ValueError("batch_size must be positive")
@@ -839,7 +846,7 @@ def write_partitioned_parquet(
         raise FileExistsError(f"canonical output directory is not empty: {root}")
     buffers: dict[Path, list[CanonicalTransaction]] = {}
     part_numbers: dict[Path, int] = {}
-    seen_ids: set[tuple[str, str]] = set()
+    seen_ids: set[tuple[str, str]] | None = set() if check_unique_ids else None
     written = 0
     digest = hashlib.sha256()
 
@@ -866,10 +873,11 @@ def write_partitioned_parquet(
         batch.clear()
 
     for record in records:
-        key = (record.dataset, record.transaction_id)
-        if key in seen_ids:
-            raise ValueError(f"duplicate transaction_id: {record.dataset}/{record.transaction_id}")
-        seen_ids.add(key)
+        if seen_ids is not None:
+            key = (record.dataset, record.transaction_id)
+            if key in seen_ids:
+                raise ValueError(f"duplicate transaction_id: {record.dataset}/{record.transaction_id}")
+            seen_ids.add(key)
         year = datetime.fromisoformat(record.timestamp.replace("Z", "+00:00")).year
         partition = root / f"dataset={record.dataset}" / f"year={year}"
         batch = buffers.setdefault(partition, [])
