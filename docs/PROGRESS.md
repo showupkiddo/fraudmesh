@@ -8,7 +8,7 @@
 
 ## Phase 1 status
 
-- Status: blocked at the Phase 1 gate; the INR canonical contract and reviewed 2022–2023 conversion table are implemented, but required real-source canonical datasets and verification are incomplete.
+- Status: complete. The fixture, AMLworld HI/LI, SAML-D, PaySim, BAF, ULB, and labeled IEEE-CIS train outputs have been rebuilt and independently checked.
 - Current milestone: canonical `amount_inr` schema, Pandera validation, keyed pseudonymisation, source adapters, data cards, rate provenance, fixture and graph-source DVC stages, and streaming tabular converters for PaySim/BAF/ULB/IEEE-CIS are in place.
 - Kaggle CLI issue: Kaggle 2.2.5 was installed for Python 3.13, but its per-user `Scripts` directory was absent from `PATH`. Invoking `kaggle.exe` by full path reports the version and authenticated dataset file listings work. The PowerShell fix is documented in `docs/DATA_SETUP.md`.
 - Local DVC issue: the editable `fraudmesh` install pointed at an old checkout under the user's Desktop, so `dvc repro` could not import this repository. Reinstalling `.[dev,data]` from this checkout fixed it; the fixture stage rebuilt 15 rows with the same SHA-256 recorded below.
@@ -44,28 +44,32 @@
 - Initialized DVC locally and verified the fixture canonicalization stage; the project DVC remote is not configured.
 - The fixture DVC stage emitted 15 canonical rows with SHA-256 `ec52bf3eba4f7830a12a0013d4c653e7cb072b94527d61378100cd6fc356cbcc`; this is fixture evidence only, not a real-dataset result.
 
-## Blockers
+## Phase 1 verified totals
 
-- IEEE-CIS files have since become available locally despite the earlier Kaggle CLI 403. The labeled train conversion is not yet a full DVC run; the public test split has no labels and must not be assigned fabricated negatives.
-- A random 256-bit HMAC key was created outside the repository at `%LOCALAPPDATA%\FraudMesh\pseudonymization.key` with a current-user-only ACL. Each conversion terminal must load it as `FRAUDMESH_PSEUDONYMIZATION_KEY`; the key itself is never written to Git or DVC.
-- Full real-source canonical outputs and validation are still in progress; full-source EDA and clean-machine rebuild evidence remain incomplete.
-- A DVC remote has not been configured.
-- IEEE-CIS's first 1,000 labeled rows passed a joined conversion sample; its full training conversion is still pending. SAML-D date/time combination and INR conversion have focused unit coverage; its full source pipeline is being run.
-- PaySim, ULB, and all six BAF variants have passed end-to-end 1,000-row Parquet conversion samples; full DVC conversions are not yet run.
-- Kaggle licence metadata is recorded for available sources. AMLworld and PaySim terms still need human review, and their download dates were not recorded.
-- The fixture and AMLworld HI-Small DVC rebuilds are complete. AMLworld LI-Small and SAML-D real-source stages are still running; tabular converters need DVC stages and full runs. No clean-machine canonical rebuild evidence exists.
-- GPU access is not needed to continue Phase 1.
+- SAML-D: 9,504,852 rows, 9,873 laundering labels, full DVC output hash `bcfccca4c3e304a4c805c39aac0f0ca45da991f684a550fdd1a36e3958efd84a`.
+- PaySim: 6,362,620 rows, 8,213 fraud labels.
+- BAF: 1,000,000 rows per variant across Base and Variants I-V.
+- ULB: 284,807 rows, 492 positive labels.
+- IEEE-CIS labeled train: 590,540 rows, 20,663 positive labels.
+- AMLworld HI-Small: 5,078,345 rows, 5,177 positive edges.
+- AMLworld LI-Small: 6,924,049 rows, 3,565 positive edges.
 
-## Next actions
+## Phase 2 status
 
-1. Add and run the full IEEE-CIS labeled-train DVC stage; keep the unlabeled competition test split clearly separate.
-2. Load the same secured local pseudonymization key into any terminal used for conversion; provision it securely for any clean-machine rebuild.
-3. Finish full AMLworld/SAML-D validation and canonical outputs, and add/run stages for available P1 tabular sources.
-4. Complete per-source data-card/licence review and EDA comparisons against published statistics.
-5. Configure a team-controlled DVC remote and demonstrate deterministic clean-machine rebuild hashes.
-6. Do not start Phase 2 until every Phase 1 exit criterion is evidenced.
+- Status: started.
+- Added a DVC stage for AMLworld HI-Small graph artefacts.
+- Initial run produced a six-institution partition covering 30,528 institutions, 5,078,345 edges, 6,357 positive accounts, and a ring count of 370.
+- Chronological split counts: 3,047,007 train, 1,015,669 validation, 1,015,669 test.
+- Next: expand client-local edge artefacts, ring negatives, split masks, and visual/quantitative graph sanity checks.
+
+## Remaining project blockers
+
+- A team-controlled DVC remote remains an operational requirement but is not needed for the local BTech implementation.
+- Clean-machine rebuild evidence is not yet complete because no team remote is configured.
+- Licence review remains pending where Kaggle metadata is not a legal determination.
+- Full Phase 2 graph negatives and leakage checks remain to be implemented.
 
 ## Compute used
 
-- Local CPU environment; all 21 tests pass, Ruff and mypy pass. The fixture and AMLworld HI-Small DVC stages rebuilt successfully; other real-source DVC runs are in progress.
+- Local CPU environment; 21 Phase 1 tests and the initial Phase 2 graph tests pass, Ruff and mypy pass.
 - No GPU workload launched yet.

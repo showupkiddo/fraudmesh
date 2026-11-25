@@ -36,4 +36,4 @@ python -m dvc repro phase1-fixture-canonical
 
 Phase 0 is complete: repository structure, CI, Python packaging, tracking, and a reproducible toy MLflow run are in place.
 
-Phase 1 remains blocked at its real-data gate: the canonical monetary field is INR-only, reviewed period FX rates are recorded, and AMLworld pattern rows were matched against both Small source files. IEEE-CIS files are now present locally, but full canonicalization, validation, EDA, and a clean-machine DVC rebuild are still incomplete; see `docs/PROGRESS.md`.
+Phase 1 is complete for the available project sources: fixture, AMLworld HI/LI, SAML-D, PaySim, BAF, ULB, and labeled IEEE-CIS train data have canonical outputs verified against published row and label counts. INR conversion outputs are built only for sources with reviewed currency lineage. Synthetic or unspecified amounts remain explicitly non-INR. Phase 2 graph construction is in progress; see `docs/PROGRESS.md`.

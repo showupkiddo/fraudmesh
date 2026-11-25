@@ -102,3 +102,15 @@ stages:
       - src/fraudmesh/tabular_pipeline.py
     outs:
       - data/processed/ieee-cis
+  phase2-amlworld-hi-small-graph:
+    cmd: >-
+      python -m fraudmesh.graph_pipeline
+      --input-dir data/processed/amlworld-hi-small
+      --output-dir data/processed/graph-amlworld-hi-small
+      --client-count 6
+    deps:
+      - data/processed/amlworld-hi-small
+      - pyproject.toml
+      - src/fraudmesh/graph_pipeline.py
+    outs:
+      - data/processed/graph-amlworld-hi-small

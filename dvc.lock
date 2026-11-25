@@ -1,0 +1,268 @@
+schema: '2.0'
+stages:
+  phase1-fixture-canonical:
+    cmd: python -m fraudmesh.data.pipeline --output-dir data/processed/fixture
+    deps:
+    - path: data/fixtures/fraud_fixture.csv
+      hash: md5
+      md5: 33e88741dd572558db947152c54335d8
+      size: 1456
+    - path: pyproject.toml
+      hash: md5
+      md5: dd6348f35b3a4a79d12eb10930ab8c17
+      size: 990
+    - path: src/fraudmesh/data
+      hash: md5
+      md5: 4a0e70916c84a247c123a19baaf357f2.dir
+      size: 124516
+      nfiles: 8
+    outs:
+    - path: data/processed/fixture
+      hash: md5
+      md5: 9d54dad9138b1b3ec948c8b73179bba5.dir
+      size: 4303
+      nfiles: 1
+  phase1-amlworld-hi-small-canonical:
+    cmd: python -m fraudmesh.data.pipeline --source amlworld --dataset 
+      amlworld-hi-small --input-path 
+      data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/HI-Small_Trans.csv
+      --pattern-path 
+      data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/HI-Small_Patterns.txt
+      --rates-path data/config/currency-rates.csv --output-dir 
+      data/processed/amlworld-hi-small
+    deps:
+    - path: data/config/currency-rates.csv
+      hash: md5
+      md5: b55bc9152f4702d069ca8b3624483536
+      size: 3267
+    - path: 
+        data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/HI-Small_Patterns.txt
+      hash: md5
+      md5: 0a26e1834ffb9c11de238f97059ff44b
+      size: 323844
+    - path: 
+        data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/HI-Small_Trans.csv
+      hash: md5
+      md5: 9667f3a6323e6ad88e699acf42db9157
+      size: 475664283
+    - path: pyproject.toml
+      hash: md5
+      md5: dd6348f35b3a4a79d12eb10930ab8c17
+      size: 990
+    - path: src/fraudmesh/data
+      hash: md5
+      md5: 4a0e70916c84a247c123a19baaf357f2.dir
+      size: 124516
+      nfiles: 8
+    outs:
+    - path: data/processed/amlworld-hi-small
+      hash: md5
+      md5: 4b2568cbc7b770a2da3bbf00a5bab3c1.dir
+      size: 302773303
+      nfiles: 102
+  phase1-amlworld-li-small-canonical:
+    cmd: python -m fraudmesh.data.pipeline --source amlworld --dataset 
+      amlworld-li-small --input-path 
+      data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/LI-Small_Trans.csv
+      --pattern-path 
+      data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/LI-Small_Patterns.txt
+      --rates-path data/config/currency-rates.csv --output-dir 
+      data/processed/amlworld-li-small
+    deps:
+    - path: data/config/currency-rates.csv
+      hash: md5
+      md5: b55bc9152f4702d069ca8b3624483536
+      size: 3267
+    - path: 
+        data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/LI-Small_Patterns.txt
+      hash: md5
+      md5: d11028b5ee3c5a887f4f6d7033da8cb8
+      size: 99156
+    - path: 
+        data/raw/amlworld/ibm-transactions-for-anti-money-laundering-aml/LI-Small_Trans.csv
+      hash: md5
+      md5: c4f75074f5456972fc66859ddbe58fda
+      size: 650422357
+    - path: pyproject.toml
+      hash: md5
+      md5: dd6348f35b3a4a79d12eb10930ab8c17
+      size: 990
+    - path: src/fraudmesh/data
+      hash: md5
+      md5: 4a0e70916c84a247c123a19baaf357f2.dir
+      size: 124516
+      nfiles: 8
+    outs:
+    - path: data/processed/amlworld-li-small
+      hash: md5
+      md5: e142d1ce1bba6eea24633ecc3e9ad33d.dir
+      size: 415599475
+      nfiles: 139
+  phase1-samld-canonical:
+    cmd: python -m fraudmesh.data.pipeline --source samld --input-path 
+      data/raw/samld/synthetic-transaction-monitoring-dataset-aml.zip 
+      --rates-path data/config/currency-rates.csv --output-dir 
+      data/processed/samld
+    deps:
+    - path: data/config/currency-rates.csv
+      hash: md5
+      md5: b55bc9152f4702d069ca8b3624483536
+      size: 3267
+    - path: data/raw/samld/synthetic-transaction-monitoring-dataset-aml.zip
+      hash: md5
+      md5: 4459f896bdb2ace6849fbf8bf389225c
+      size: 202528964
+    - path: pyproject.toml
+      hash: md5
+      md5: dd6348f35b3a4a79d12eb10930ab8c17
+      size: 990
+    - path: src/fraudmesh/data
+      hash: md5
+      md5: 4a0e70916c84a247c123a19baaf357f2.dir
+      size: 124516
+      nfiles: 8
+    outs:
+    - path: data/processed/samld
+      hash: md5
+      md5: 626d4a4161bd3e067ebf65d60e033a18.dir
+      size: 609931453
+      nfiles: 191
+  phase1-tabular-paysim-canonical:
+    cmd: python -m fraudmesh.tabular_pipeline --source paysim --input-path 
+      data/raw/paysim/paysim1.zip --output-dir data/processed/paysim
+    deps:
+    - path: data/raw/paysim/paysim1.zip
+      hash: md5
+      md5: a898ef24f1186bc853fb1d51740a835c
+      size: 186385561
+    - path: pyproject.toml
+      hash: md5
+      md5: dd6348f35b3a4a79d12eb10930ab8c17
+      size: 990
+    - path: src/fraudmesh/data
+      hash: md5
+      md5: 4a0e70916c84a247c123a19baaf357f2.dir
+      size: 124516
+      nfiles: 8
+    - path: src/fraudmesh/tabular_pipeline.py
+      hash: md5
+      md5: 563b9bc9251435be596b9bcdd9278685
+      size: 20416
+    outs:
+    - path: data/processed/paysim
+      hash: md5
+      md5: 96fe3a6c0843cf74d9019af3a4fb19fd.dir
+      size: 585255034
+      nfiles: 2
+  phase1-tabular-baf-canonical:
+    cmd: python -m fraudmesh.tabular_pipeline --source baf --input-path 
+      data/raw/baf/bank-account-fraud-dataset-neurips-2022.zip --output-dir 
+      data/processed/baf
+    deps:
+    - path: data/raw/baf/bank-account-fraud-dataset-neurips-2022.zip
+      hash: md5
+      md5: 40692c442a2ac1b421150be833c47637
+      size: 558054164
+    - path: pyproject.toml
+      hash: md5
+      md5: dd6348f35b3a4a79d12eb10930ab8c17
+      size: 990
+    - path: src/fraudmesh/data
+      hash: md5
+      md5: 4a0e70916c84a247c123a19baaf357f2.dir
+      size: 124516
+      nfiles: 8
+    - path: src/fraudmesh/tabular_pipeline.py
+      hash: md5
+      md5: 563b9bc9251435be596b9bcdd9278685
+      size: 20416
+    outs:
+    - path: data/processed/baf
+      hash: md5
+      md5: 011124bbf0ddbf6634e26232120626c0.dir
+      size: 514529631
+      nfiles: 7
+  phase1-tabular-ulb-canonical:
+    cmd: python -m fraudmesh.tabular_pipeline --source ulb --input-path 
+      data/raw/ulb/creditcardfraud.zip --output-dir data/processed/ulb
+    deps:
+    - path: data/raw/ulb/creditcardfraud.zip
+      hash: md5
+      md5: bf8e9842731ab6f9b8ab51e1a6741f8b
+      size: 69155672
+    - path: pyproject.toml
+      hash: md5
+      md5: dd6348f35b3a4a79d12eb10930ab8c17
+      size: 990
+    - path: src/fraudmesh/data
+      hash: md5
+      md5: 4a0e70916c84a247c123a19baaf357f2.dir
+      size: 124516
+      nfiles: 8
+    - path: src/fraudmesh/tabular_pipeline.py
+      hash: md5
+      md5: 563b9bc9251435be596b9bcdd9278685
+      size: 20416
+    outs:
+    - path: data/processed/ulb
+      hash: md5
+      md5: c4ccedd990cd57ffab05a56b9437c204.dir
+      size: 82130645
+      nfiles: 2
+  phase1-tabular-ieee-cis-train-canonical:
+    cmd: python -m fraudmesh.tabular_pipeline --source ieee-cis --input-path 
+      data/raw/ieee-cis/ieee-fraud-detection/train_transaction.csv 
+      --identity-path data/raw/ieee-cis/ieee-fraud-detection/train_identity.csv 
+      --output-dir data/processed/ieee-cis
+    deps:
+    - path: data/raw/ieee-cis/ieee-fraud-detection/train_identity.csv
+      hash: md5
+      md5: 8487db5001c8bad139f3318d5d3db416
+      size: 26529680
+    - path: data/raw/ieee-cis/ieee-fraud-detection/train_transaction.csv
+      hash: md5
+      md5: 58b4038d8715f5e11007b826bef00ce7
+      size: 683351067
+    - path: pyproject.toml
+      hash: md5
+      md5: dd6348f35b3a4a79d12eb10930ab8c17
+      size: 990
+    - path: src/fraudmesh/data
+      hash: md5
+      md5: 4a0e70916c84a247c123a19baaf357f2.dir
+      size: 124516
+      nfiles: 8
+    - path: src/fraudmesh/tabular_pipeline.py
+      hash: md5
+      md5: 563b9bc9251435be596b9bcdd9278685
+      size: 20416
+    outs:
+    - path: data/processed/ieee-cis
+      hash: md5
+      md5: 097182347da9f26a02022316c67dad40.dir
+      size: 104514625
+      nfiles: 2
+  phase2-amlworld-hi-small-graph:
+    cmd: python -m fraudmesh.graph_pipeline --input-dir 
+      data/processed/amlworld-hi-small --output-dir 
+      data/processed/graph-amlworld-hi-small --client-count 6
+    deps:
+    - path: data/processed/amlworld-hi-small
+      hash: md5
+      md5: 4b2568cbc7b770a2da3bbf00a5bab3c1.dir
+      size: 302773303
+      nfiles: 102
+    - path: pyproject.toml
+      hash: md5
+      md5: dd6348f35b3a4a79d12eb10930ab8c17
+      size: 990
+    - path: src/fraudmesh/graph_pipeline.py
+      hash: md5
+      md5: 3f01b36966eb054486ddd88ce739d294
+      size: 6469
+    outs:
+    - path: data/processed/graph-amlworld-hi-small
+      hash: md5
+      md5: 0958a4bd937854a9f9c4947981650d89.dir
+      size: 513096
+      nfiles: 3
