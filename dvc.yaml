@@ -108,6 +108,7 @@ stages:
       --input-dir data/processed/amlworld-hi-small
       --output-dir data/processed/graph-amlworld-hi-small
       --client-count 6
+      --complete
     deps:
       - data/processed/amlworld-hi-small
       - pyproject.toml
